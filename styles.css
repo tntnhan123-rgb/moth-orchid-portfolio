@@ -62,3 +62,16 @@
   .project-cover img,.detail-hero,.gallery-thumb img{width:100%;height:auto;object-fit:contain}
   .section-shell{padding-left:5vw;padding-right:5vw}
 }
+
+
+/* Text legibility and editable homepage text palette */
+:root{--text-color:#ece9e3;--muted-text-color:#999999}
+body{color:var(--text-color)}
+.hero h1,.about h2,.works h2,.contact h2,.detail-top h1,.project-title,.gallery-heading h3,.auth-panel h2,.dashboard-heading h2,.admin-top h1{color:var(--text-color)}
+.hero-intro,.about-copy p:not(.lead),.contact-copy p,.project-description,.detail-top p,.detail-top .section-index,.project-meta,.discipline-list,.social-links a,.form-message,.upload-hint{color:var(--muted-text-color)}
+.about h2 em,.works h2 em,.contact h2 em,.admin-top h1 em{color:var(--muted-text-color)}
+.hero,.hero-center,.hero h1,.script-title,.about,.works,.contact,.about-layout,.contact-layout,.detail-top,.detail-top h1,.project-title,.project-description,.admin-project-info,.admin-project-info strong{min-width:0;overflow:visible}
+.hero h1,.script-title,.about h2,.works h2,.contact h2,.detail-top h1{line-height:1.18;padding-top:.08em;padding-bottom:.12em;overflow:visible;overflow-wrap:anywhere}
+.hero-intro,.about-copy p,.contact-copy p,.project-description,.detail-top p{line-height:1.9;overflow:visible;white-space:normal;overflow-wrap:anywhere;word-break:normal}
+.project-title,.admin-project-info strong{line-height:1.5;overflow-wrap:anywhere}
+.admin-form input[type=color]{height:48px;padding:5px;cursor:pointer}
