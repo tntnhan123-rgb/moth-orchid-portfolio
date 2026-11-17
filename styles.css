@@ -41,3 +41,5 @@
 .admin-project{flex-wrap:wrap}
 .admin-project-extra{width:100%;font:8px var(--mono);color:#777;letter-spacing:.1em}
 @media(max-width:700px){.detail-top{grid-template-columns:1fr;gap:14px}.detail-gallery{grid-template-columns:1fr}.analytics-grid{grid-template-columns:1fr 1fr}.lightbox{padding:15px 3vw}.lightbox-stage{gap:8px}.lightbox-stage img{max-width:76vw}.lightbox button{padding:9px 11px}}
+
+:root{--site-font:"Montserrat",sans-serif;--type-scale:1}body{font-family:var(--site-font)}.hero-intro,.about-copy p:not(.lead),.contact-copy p,.project-description,.detail-top p{font-size:calc(11px * var(--type-scale))}.about-copy .lead{font-size:calc(clamp(22px,2.8vw,34px) * var(--type-scale))}.homepage-editor{margin-bottom:34px}.homepage-editor .form-message{margin:0}

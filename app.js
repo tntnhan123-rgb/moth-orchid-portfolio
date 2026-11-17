@@ -5,6 +5,16 @@ const $ = id => document.getElementById(id);
 const configured = !SUPABASE_URL.includes("YOUR-PROJECT") && !SUPABASE_ANON_KEY.includes("YOUR_SUPABASE");
 const supabase = configured ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 let projects = [], activeFilter = "All", currentDetail = null, lightboxItems = [], lightboxIndex = 0;
+
+const HOME_DEFAULTS={heroEyebrow:"Selected works",heroTitle:"MOTH / ORCHID",heroIntro:"A visual practice exploring the tension between the organic and the artificial — through image, identity, motion and atmosphere.",heroButton:"Explore the archive",aboutHeading:"Between form and feeling.",aboutLead:"Building visual languages at the intersection of design, atmosphere and storytelling.",aboutParagraph1:"I work across graphic design, visual identity and digital imagery. Drawn to cinematic contrast, botanical structures, tactile surfaces and details that reward a closer look.",aboutParagraph2:"This portfolio is a living archive of selected commissions, self-initiated studies and ongoing experiments.",worksHeading:"Selected works",contactEyebrow:"Have a project?",contactText:"Available for selected freelance projects, collaborations and creative opportunities.",font:"Montserrat",scale:"1"};
+const HOME_INPUTS={homeEyebrowInput:"heroEyebrow",homeTitleInput:"heroTitle",homeIntroInput:"heroIntro",homeButtonInput:"heroButton",aboutHeadingInput:"aboutHeading",aboutLeadInput:"aboutLead",aboutParagraph1Input:"aboutParagraph1",aboutParagraph2Input:"aboutParagraph2",worksHeadingInput:"worksHeading",contactEyebrowInput:"contactEyebrow",contactTextInput:"contactText"};
+let homeSettings={...HOME_DEFAULTS};
+function applyHome(s){s={...HOME_DEFAULTS,...s};const put=(id,v)=>{const el=$(id);if(el)el.textContent=v||"";};Object.entries({homeEyebrow:"heroEyebrow",homeTitle:"heroTitle",homeIntro:"heroIntro",homeButtonText:"heroButton",aboutHeading:"aboutHeading",aboutLead:"aboutLead",aboutParagraph1:"aboutParagraph1",aboutParagraph2:"aboutParagraph2",worksHeading:"worksHeading",contactEyebrow:"contactEyebrow",contactText:"contactText"}).forEach(([id,key])=>put(id,s[key]));document.documentElement.style.setProperty("--site-font",s.font==="Arial"?"Arial, sans-serif":'"'+s.font+'", sans-serif');document.documentElement.style.setProperty("--type-scale",String(Number(s.scale)||1));homeSettings=s;}
+async function loadHome(){if(!supabase){applyHome(HOME_DEFAULTS);return;}const {data,error}=await supabase.from("site_settings").select("settings").eq("id","homepage").maybeSingle();if(error){console.warn("Homepage settings unavailable",error);applyHome(HOME_DEFAULTS);return;}applyHome(data?.settings||HOME_DEFAULTS);}
+function fillHomeForm(){Object.entries(HOME_INPUTS).forEach(([id,key])=>$(id).value=homeSettings[key]||"");$("siteFontInput").value=homeSettings.font||"Montserrat";$("siteScaleInput").value=homeSettings.scale||"1";}
+async function saveHome(e){e.preventDefault();const settings={};Object.entries(HOME_INPUTS).forEach(([id,key])=>settings[key]=$(id).value.trim());settings.font=$("siteFontInput").value;settings.scale=$("siteScaleInput").value;$("saveHomepage").disabled=true;$("homepageMessage").textContent="Saving…";try{const {error}=await supabase.from("site_settings").upsert({id:"homepage",settings,updated_at:new Date().toISOString()},{onConflict:"id"});if(error)throw error;applyHome(settings);$("homepageMessage").textContent="Homepage updated successfully.";toast("Homepage updated.");}catch(err){$("homepageMessage").textContent=err.message||"Unable to save homepage.";}finally{$("saveHomepage").disabled=false;}}
+function resetHome(){applyHome(HOME_DEFAULTS);fillHomeForm();$("homepageMessage").textContent="Default content loaded. Press Save homepage to publish.";}
+
 const localSessionKey = "moth_orchid_session_id";
 const sessionId = getSessionId();
 
@@ -25,6 +35,7 @@ document.querySelectorAll(".main-nav a").forEach(a=>a.addEventListener("click",(
 $("filters").addEventListener("click",e=>{const b=e.target.closest("[data-filter]");if(!b)return;activeFilter=b.dataset.filter;document.querySelectorAll(".filter").forEach(x=>x.classList.toggle("active",x===b));renderProjects();});
 $("loginForm").addEventListener("submit",signIn);$("logoutButton").addEventListener("click",signOut);
 $("projectForm").addEventListener("submit",saveProject);$("resetForm").addEventListener("click",resetEditor);
+$("homepageForm").addEventListener("submit",saveHome);$("resetHomepage").addEventListener("click",resetHome);
 $("backToWorks").addEventListener("click",()=>navigateToWorks());
 document.querySelectorAll("[data-social]").forEach(a=>{const k=a.dataset.social;if(SITE[k])a.href=SITE[k];});
 $("emailLink")?.setAttribute("href",`mailto:${SITE.email}`);
@@ -41,6 +52,7 @@ $("lightbox").addEventListener("click",e=>{if(e.target.id==="lightbox")closeLigh
 document.addEventListener("keydown",e=>{if($("lightbox")&&!$("lightbox").hidden){if(e.key==="Escape")closeLightbox();if(e.key==="ArrowLeft")stepLightbox(-1);if(e.key==="ArrowRight")stepLightbox(1);}});
 window.addEventListener("hashchange",routeFromHash);
 if(location.hash==="#studio")openAdmin();else routeFromHash();
+loadHome();
 
 function routeFromHash(){
   if(location.hash==="#studio"){openAdmin();return;}
@@ -134,7 +146,7 @@ async function showDashboard(){
   const {data:{user}}=await supabase.auth.getUser();if(!user)return;
   const {data:role,error}=await supabase.from("admin_users").select("user_id").eq("user_id",user.id).maybeSingle();
   if(error||!role){await supabase.auth.signOut();$("authMessage").textContent="This account is not authorized as an administrator.";$("authPanel").hidden=false;$("dashboard").hidden=true;return;}
-  $("authPanel").hidden=true;$("dashboard").hidden=false;await loadAdminProjects();await loadAnalytics();
+  $("authPanel").hidden=true;$("dashboard").hidden=false;await loadHome();fillHomeForm();await loadAdminProjects();await loadAnalytics();
 }
 async function loadAdminProjects(){
   const {data,error}=await supabase.from("projects").select("*,project_images(*)").order("sort_order",{ascending:true}).order("created_at",{ascending:false});
