@@ -43,3 +43,22 @@
 @media(max-width:700px){.detail-top{grid-template-columns:1fr;gap:14px}.detail-gallery{grid-template-columns:1fr}.analytics-grid{grid-template-columns:1fr 1fr}.lightbox{padding:15px 3vw}.lightbox-stage{gap:8px}.lightbox-stage img{max-width:76vw}.lightbox button{padding:9px 11px}}
 
 :root{--site-font:"Montserrat",sans-serif;--type-scale:1}body{font-family:var(--site-font)}.hero-intro,.about-copy p:not(.lead),.contact-copy p,.project-description,.detail-top p{font-size:calc(11px * var(--type-scale))}.about-copy .lead{font-size:calc(clamp(22px,2.8vw,34px) * var(--type-scale))}.homepage-editor{margin-bottom:34px}.homepage-editor .form-message{margin:0}
+
+
+/* Full-content display: preserve complete text and original image proportions */
+.section-shell{max-width:none}
+.about-copy,.contact-copy,.project-description,.detail-top p{max-width:none}
+.project-cover{aspect-ratio:auto;min-height:0;overflow:visible}
+.project-cover img{width:100%;height:auto;max-height:none;object-fit:contain;filter:grayscale(20%)}
+.project-card:hover .project-cover img{transform:none;filter:grayscale(0)}
+.detail-hero{display:block;width:100%;height:auto;max-height:none;aspect-ratio:auto;object-fit:contain}
+.detail-gallery{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
+.gallery-thumb{height:auto;aspect-ratio:auto;overflow:visible;display:block}
+.gallery-thumb img{display:block;width:100%;height:auto;max-height:none;object-fit:contain}
+.lightbox-stage img{width:auto;height:auto;max-width:92vw;max-height:84vh;object-fit:contain}
+.project-description,.detail-top p,.about-copy p,.contact-copy p{overflow:visible;white-space:normal;overflow-wrap:anywhere}
+@media(max-width:700px){
+  .detail-gallery{grid-template-columns:1fr}
+  .project-cover img,.detail-hero,.gallery-thumb img{width:100%;height:auto;object-fit:contain}
+  .section-shell{padding-left:5vw;padding-right:5vw}
+}
