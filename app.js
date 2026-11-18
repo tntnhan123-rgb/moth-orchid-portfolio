@@ -176,7 +176,7 @@ function openProject(id,updateHash=true){
   const video=videoEmbed(p.video_url||"");
   const layout=["editorial","full-bleed","gallery-first","split"].includes(p.layout_style)?p.layout_style:"editorial";
   const detailText=(p.detail_content||"").trim();
-  const detailCopy=detailText?`<div class="project-story">${detailText.split(/\\n\\s*\\n/).map(paragraph=>`<p>${escapeHtml(paragraph).replace(/\\n/g,"<br>")}</p>`).join("")}</div>`:"";
+  const detailCopy=detailText?`<div class="project-story">${detailText.split(/\n\s*\n/).map(paragraph=>`<p>${escapeHtml(paragraph).replace(/\n/g,"<br>")}</p>`).join("")}</div>`:"";
   const top=`<div class="detail-top"><div><div class="section-index"><span>PROJECT</span><span>${escapeHtml(p.category||"Selected work")} / ${escapeHtml(p.year||"")}</span></div><h1>${escapeHtml(p.title)}</h1></div><p>${escapeHtml(p.description||"")}</p></div>`;
   const hero=cover?`<img class="detail-hero" src="${escapeHtml(cover)}" alt="${escapeHtml(p.title)}">`:"";
   const media=video?`<div class="detail-video">${video}</div>`:"";
