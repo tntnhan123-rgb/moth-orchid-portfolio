@@ -152,7 +152,19 @@
           </div>
           <label>Short description<textarea id="description" rows="3" maxlength="500" placeholder="Short summary shown on the archive card..."></textarea></label>
           <label>Detailed project content<textarea id="detailContentInput" rows="7" placeholder="Write the full project story, creative direction, process, role and outcomes. Separate paragraphs with a blank line."></textarea></label>
-          <label>Project detail layout<select id="layoutStyleInput"><option value="editorial">Editorial — title, summary and image</option><option value="full-bleed">Full bleed — large image first</option><option value="gallery-first">Gallery first — image-led story</option><option value="split">Split — text and media side by side</option></select></label>
+          <label>Project detail layout<select id="layoutStyleInput"><option value="editorial">Editorial — cân bằng</option><option value="full-bleed">Full bleed — ảnh tràn khung</option><option value="gallery-first">Gallery first — bộ ảnh mở đầu</option><option value="split">Split — chữ và ảnh song song</option><option value="cinematic">Cinematic — ảnh lớn, tiêu đề phía sau</option><option value="magazine">Magazine — bố cục tạp chí</option><option value="minimal">Minimal — nội dung tối giản</option></select></label>
+          <div class="layout-presets" id="layoutPresets">
+            <div class="layout-presets-heading"><span>Layout mẫu</span><small>Chọn một bố cục cho trang chi tiết dự án</small></div>
+            <div class="layout-preset-grid">
+              <button type="button" class="layout-preset" data-layout-preset="editorial" aria-pressed="true"><span class="layout-preview preview-editorial"><i></i><b></b><em></em><em></em></span><strong>Editorial</strong><small>Cân bằng · cổ điển</small></button>
+              <button type="button" class="layout-preset" data-layout-preset="full-bleed" aria-pressed="false"><span class="layout-preview preview-fullbleed"><i></i><b></b><em></em></span><strong>Full bleed</strong><small>Ảnh tràn khung</small></button>
+              <button type="button" class="layout-preset" data-layout-preset="gallery-first" aria-pressed="false"><span class="layout-preview preview-gallery"><i></i><i></i><i></i><b></b></span><strong>Gallery first</strong><small>Bộ ảnh mở đầu</small></button>
+              <button type="button" class="layout-preset" data-layout-preset="split" aria-pressed="false"><span class="layout-preview preview-split"><b></b><i></i><em></em></span><strong>Split</strong><small>Chữ và ảnh song song</small></button>
+              <button type="button" class="layout-preset" data-layout-preset="cinematic" aria-pressed="false"><span class="layout-preview preview-cinematic"><i></i><b></b><em></em></span><strong>Cinematic</strong><small>Ảnh lớn · điện ảnh</small></button>
+              <button type="button" class="layout-preset" data-layout-preset="magazine" aria-pressed="false"><span class="layout-preview preview-magazine"><b></b><i></i><i></i><i></i></span><strong>Magazine</strong><small>Lưới kiểu tạp chí</small></button>
+              <button type="button" class="layout-preset" data-layout-preset="minimal" aria-pressed="false"><span class="layout-preview preview-minimal"><b></b><em></em><i></i></span><strong>Minimal</strong><small>Chữ trước · ảnh sau</small></button>
+            </div>
+          </div>
           <label>Project thumbnail<input id="coverImage" type="file" accept="image/jpeg,image/png,image/webp"></label>
           <label>Gallery images — select multiple<input id="galleryImages" type="file" accept="image/jpeg,image/png,image/webp" multiple></label>
           <div class="upload-hint">JPG, PNG or WebP · Recommended 1600 × 1200 px · Maximum 8 MB per image. Thumbnail and gallery images are stored separately.</div>
