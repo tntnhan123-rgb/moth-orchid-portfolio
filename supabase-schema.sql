@@ -20,6 +20,8 @@ create table if not exists public.projects (
   thumbnail_url text,
   thumbnail_path text,
   video_url text,
+  detail_content text,
+  layout_style text not null default 'editorial',
   sort_order integer not null default 0,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -27,6 +29,8 @@ create table if not exists public.projects (
 alter table public.projects add column if not exists thumbnail_url text;
 alter table public.projects add column if not exists thumbnail_path text;
 alter table public.projects add column if not exists video_url text;
+alter table public.projects add column if not exists detail_content text;
+alter table public.projects add column if not exists layout_style text not null default 'editorial';
 alter table public.projects add column if not exists sort_order integer not null default 0;
 
 create table if not exists public.project_images (
