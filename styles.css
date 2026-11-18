@@ -189,3 +189,25 @@ body,p,li,label,input,textarea,select,button,
 }
 
 .language-toggle{flex:0 0 auto;margin-left:clamp(12px,2vw,28px);padding:7px 9px;border:1px solid #ffffff38;background:transparent;color:#fff;font:500 9px "Montserrat",sans-serif;letter-spacing:.12em;cursor:pointer;transition:background .2s,border-color .2s}.language-toggle:hover{background:#ffffff12;border-color:#fff}@media(max-width:700px){.language-toggle{margin-left:auto;margin-right:12px}.site-header{display:flex;align-items:center}}
+
+
+/* Lunar phase markers — subtle editorial symbols for each homepage section */
+.hero-moon-wrap{display:flex;align-items:center;gap:16px}
+.moon-phase{position:relative;display:inline-block;flex:0 0 24px;width:24px;height:24px;border:1px solid #ffffff35;border-radius:50%;overflow:hidden;vertical-align:middle;box-shadow:0 0 18px #e9e2ff18}
+.moon-phase::before{content:"";position:absolute;inset:2px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff 0,#e9e5df 55%,#aaa49d 100%);box-shadow:0 0 9px #fff7}
+.moon-phase::after{content:"";position:absolute;inset:1px;border-radius:50%;background:#090909;transition:transform .5s ease}
+.moon-new::before{opacity:.12}.moon-new::after{transform:translateX(0)}
+.moon-waxing::after{transform:translateX(-55%)}
+.moon-full::after{transform:translateX(115%)}
+.moon-waning::after{transform:translateX(55%)}
+.section-index .moon-phase{margin-left:auto;width:30px;height:30px;flex-basis:30px}
+.subfilter-row{width:100%;display:flex;flex-wrap:wrap;gap:15px 22px;padding:15px 0 5px 18px;margin-top:-10px;border-left:1px solid #ffffff25}
+.subfilter-row[hidden]{display:none}
+.subfilter{font-size:7px;color:#8d8982}
+.subfilter.active{color:#f1eee8;border-color:#d5cec4}
+@media(max-width:700px){
+ .hero-moon-wrap{gap:9px}
+ .hero-topline .moon-phase{width:19px;height:19px;flex-basis:19px}
+ .section-index .moon-phase{width:25px;height:25px;flex-basis:25px}
+ .subfilter-row{gap:13px 16px;padding-left:12px}
+}
