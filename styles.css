@@ -87,3 +87,103 @@ body{color:var(--text-color)}
 .admin-thumb{object-fit:contain;background:#151515}
 .site-header{background:color-mix(in srgb,var(--bg) 82%,transparent)}
 @media(max-width:700px){.style-controls{padding:16px}.style-controls .form-actions{align-items:flex-start;flex-direction:column}}
+
+
+/* MOTH / ORCHID refinement — stronger typography and luminous starfield */
+@font-face{
+  font-family:"Magic Story";
+  src:local("Magic Story");
+  font-display:swap;
+}
+:root{--sans:"Montserrat",Arial,sans-serif}
+body{font-family:"Montserrat",Arial,sans-serif;font-weight:400}
+body,p,li,label,input,textarea,select,button,
+.hero-intro,.about-copy p,.contact-copy p,.project-description,
+.project-meta,.main-nav a,.text-link,.site-footer,
+.detail-top p,.detail-content p,.admin-view p{
+  font-family:"Montserrat",Arial,sans-serif;
+  font-weight:400;
+}
+.hero-topline,.hero-bottom,.section-index,.mono,.eyebrow,
+.discipline-list,.project-meta,.filter,.site-footer{
+  font-weight:500;
+}
+.hero h1,.about h2,.works h2,.contact h2,
+.project-title,.detail-top h1{
+  font-weight:600;
+}
+.script-title{
+  font-family:"Magic Story","Mrs Saint Delafield",cursive;
+  font-weight:400;
+  letter-spacing:.01em;
+  -webkit-text-stroke:.12px currentColor;
+  filter:drop-shadow(0 0 9px #f5e8ff35);
+}
+/* More visible pinpoints and soft halos; two independent drift/flicker layers. */
+#starfield{
+  opacity:1;
+  background-color:transparent;
+  background-image:
+    radial-gradient(1.6px 1.6px at 7% 13%,#fff 98%,transparent),
+    radial-gradient(1.2px 1.2px at 17% 72%,#fff 98%,transparent),
+    radial-gradient(2px 2px at 29% 31%,#f4eaff 98%,transparent),
+    radial-gradient(1.4px 1.4px at 41% 84%,#fff 98%,transparent),
+    radial-gradient(1.8px 1.8px at 56% 17%,#fff 98%,transparent),
+    radial-gradient(1.2px 1.2px at 68% 63%,#fff 98%,transparent),
+    radial-gradient(1.7px 1.7px at 79% 28%,#f5eaff 98%,transparent),
+    radial-gradient(1.3px 1.3px at 92% 78%,#fff 98%,transparent),
+    radial-gradient(1px 1px at 12% 48%,#fff 98%,transparent),
+    radial-gradient(1px 1px at 36% 6%,#fff 98%,transparent),
+    radial-gradient(1px 1px at 73% 91%,#fff 98%,transparent),
+    radial-gradient(1px 1px at 88% 48%,#fff 98%,transparent);
+  background-size:100% 100%;
+  filter:drop-shadow(0 0 3px #fff9);
+  animation:starfieldBreath 5.5s ease-in-out infinite alternate;
+}
+.grain::before,.grain::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background-repeat:no-repeat;
+  mix-blend-mode:screen;
+}
+.grain::before{
+  opacity:.78;
+  background-image:
+    radial-gradient(circle,#fff 0 1px,transparent 2px),
+    radial-gradient(circle,#fff 0 1.3px,transparent 2.5px),
+    radial-gradient(circle,#eee3ff 0 1.2px,transparent 2.6px),
+    radial-gradient(circle,#fff 0 .9px,transparent 2px),
+    radial-gradient(circle,#fff 0 1.4px,transparent 2.8px),
+    radial-gradient(circle,#fff 0 1px,transparent 2px);
+  background-size:100% 100%;
+  background-position:0 0;
+  animation:starTwinkle 3.2s ease-in-out infinite alternate;
+}
+.grain::after{
+  opacity:.5;
+  background-image:
+    radial-gradient(circle,#fff 0 2px, #ffffff66 2.5px,transparent 7px),
+    radial-gradient(circle,#fff 0 1.7px, #ffffff55 2.5px,transparent 7px),
+    radial-gradient(circle,#f4eaff 0 2px, #f4eaff55 3px,transparent 8px);
+  background-position:19% 24%,72% 42%,88% 17%;
+  background-size:100% 100%;
+  animation:starGlimmer 4.8s ease-in-out infinite;
+}
+@keyframes starTwinkle{
+  0%,100%{opacity:.28;filter:brightness(.8)}
+  35%{opacity:.9;filter:brightness(1.8)}
+  68%{opacity:.52;filter:brightness(1.2)}
+}
+@keyframes starGlimmer{
+  0%,100%{opacity:.18;transform:scale(.995)}
+  45%{opacity:.9;filter:brightness(2.2);transform:scale(1.01)}
+}
+@keyframes starfieldBreath{
+  from{opacity:.62;filter:brightness(.85) drop-shadow(0 0 2px #fff7)}
+  to{opacity:1;filter:brightness(1.5) drop-shadow(0 0 6px #fff9)}
+}
+@media(prefers-reduced-motion:reduce){
+  #starfield,.grain::before,.grain::after{animation:none}
+}
