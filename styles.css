@@ -75,3 +75,15 @@ body{color:var(--text-color)}
 .hero-intro,.about-copy p,.contact-copy p,.project-description,.detail-top p{line-height:1.9;overflow:visible;white-space:normal;overflow-wrap:anywhere;word-break:normal}
 .project-title,.admin-project-info strong{line-height:1.5;overflow-wrap:anywhere}
 .admin-form input[type=color]{height:48px;padding:5px;cursor:pointer}
+
+
+/* Studio v5 — per-element typography, gradients and page background */
+.style-controls{border:1px solid var(--line);padding:22px;margin:18px 0 4px;background:#101010}
+.style-controls .manage-heading{margin:12px 0 18px}
+.style-controls .manage-heading h4{font-size:13px;font-weight:400;margin:0}
+.style-controls .inline-check{display:flex!important;grid-template-columns:18px 1fr!important;align-items:center;gap:10px!important;min-height:44px}
+.style-controls .inline-check input{width:16px!important;height:16px!important;accent-color:#ddd}
+.style-controls .form-actions{margin-top:18px}
+.admin-thumb{object-fit:contain;background:#151515}
+.site-header{background:color-mix(in srgb,var(--bg) 82%,transparent)}
+@media(max-width:700px){.style-controls{padding:16px}.style-controls .form-actions{align-items:flex-start;flex-direction:column}}
