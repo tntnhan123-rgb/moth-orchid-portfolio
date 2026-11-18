@@ -310,9 +310,9 @@ body,p,li,label,input,textarea,select,button,
 .layout-cinematic .detail-top p{max-width:680px}
 .layout-magazine .detail-top{grid-template-columns:1fr .65fr;align-items:end}
 .layout-magazine .detail-gallery{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-.layout-magazine .detail-gallery .gallery-thumb:first-child{grid-column:span 2;grid-row:span 2}
-.layout-magazine .detail-gallery .gallery-thumb{height:100%;min-height:120px}
-.layout-magazine .detail-gallery .gallery-thumb img{height:100%;object-fit:cover}
+.layout-magazine .detail-gallery .gallery-thumb:first-child{grid-column:span 2}
+.layout-magazine .detail-gallery .gallery-thumb{height:auto;min-height:0}
+.layout-magazine .detail-gallery .gallery-thumb img{height:auto;object-fit:contain}
 .layout-minimal .detail-top{grid-template-columns:1fr;max-width:900px;margin:0 auto 36px}
 .layout-minimal .detail-top h1{font-size:clamp(42px,8vw,100px)}
 .layout-minimal .detail-top p{max-width:600px}
