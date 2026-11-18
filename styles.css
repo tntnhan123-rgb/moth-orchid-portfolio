@@ -187,3 +187,5 @@ body,p,li,label,input,textarea,select,button,
 @media(prefers-reduced-motion:reduce){
   #starfield,.grain::before,.grain::after{animation:none}
 }
+
+.language-toggle{flex:0 0 auto;margin-left:clamp(12px,2vw,28px);padding:7px 9px;border:1px solid #ffffff38;background:transparent;color:#fff;font:500 9px "Montserrat",sans-serif;letter-spacing:.12em;cursor:pointer;transition:background .2s,border-color .2s}.language-toggle:hover{background:#ffffff12;border-color:#fff}@media(max-width:700px){.language-toggle{margin-left:auto;margin-right:12px}.site-header{display:flex;align-items:center}}
