@@ -91,6 +91,8 @@ document.querySelectorAll(".main-nav a").forEach(a=>a.addEventListener("click",(
 $("filters").addEventListener("click",e=>{const b=e.target.closest("[data-filter]");if(!b)return;activeFilter=b.dataset.filter;renderProjects();});
 $("loginForm").addEventListener("submit",signIn);$("logoutButton").addEventListener("click",signOut);
 $("projectForm").addEventListener("submit",saveProject);$("resetForm").addEventListener("click",resetEditor);
+$("layoutStyleInput").addEventListener("change",syncLayoutPreset);
+$("layoutPresets").addEventListener("click",e=>{const button=e.target.closest("[data-layout-preset]");if(!button)return;$("layoutStyleInput").value=button.dataset.layoutPreset;syncLayoutPreset();});
 $("homepageForm").addEventListener("submit",saveHome);$("resetHomepage").addEventListener("click",resetHome);
 $("styleTargetInput").addEventListener("change",loadElementStyleInputs);
 $("previewElementStyle").addEventListener("click",()=>updateSelectedElementStyle(false));
@@ -195,7 +197,7 @@ function openProject(id,updateHash=true){
   const cover=p.thumbnail_url||p.image_url||images[0]||"";
   const gallery=images.length?images:(cover?[cover]:[]);
   const video=videoEmbed(p.video_url||"");
-  const layout=["editorial","full-bleed","gallery-first","split"].includes(p.layout_style)?p.layout_style:"editorial";
+  const layout=["editorial","full-bleed","gallery-first","split","cinematic","magazine","minimal"].includes(p.layout_style)?p.layout_style:"editorial";
   const detailText=(p.detail_content||"").trim();
   const detailCopy=detailText?`<div class="project-story">${detailText.split(/\n\s*\n/).map(paragraph=>`<p>${escapeHtml(paragraph).replace(/\n/g,"<br>")}</p>`).join("")}</div>`:"";
   const top=`<div class="detail-top"><div><div class="section-index"><span>PROJECT</span><span>${escapeHtml(p.category||"Selected work")} / ${escapeHtml(p.year||"")}</span></div><h1>${escapeHtml(p.title)}</h1></div><p>${escapeHtml(p.description||"")}</p></div>`;
@@ -206,6 +208,9 @@ function openProject(id,updateHash=true){
   $("detailContent").innerHTML=layout==="full-bleed"?`${hero}${top}${detailCopy}${media}${galleryBlock}`:
     layout==="gallery-first"?`${top}${galleryBlock}${hero}${detailCopy}${media}`:
     layout==="split"?`<div class="detail-split">${top}${hero}</div>${detailCopy}${media}${galleryBlock}`:
+    layout==="cinematic"?`${hero}<div class="cinematic-heading">${top}</div>${detailCopy}${media}${galleryBlock}`:
+    layout==="magazine"?`${top}${detailCopy}${galleryBlock}${hero}${media}`:
+    layout==="minimal"?`${top}${detailCopy}${hero}${media}${galleryBlock}`:
     `${top}${hero}${detailCopy}${media}${galleryBlock}`;
   if(safeUrl(p.external_url||""))$("detailContent").insertAdjacentHTML("beforeend",`<a class="project-open" href="${escapeHtml(safeUrl(p.external_url))}" target="_blank" rel="noopener noreferrer">${tr("external")}</a>`);
   $("detailContent").querySelectorAll("[data-gallery-index]").forEach(b=>b.addEventListener("click",()=>openLightbox(gallery,Number(b.dataset.galleryIndex),p.title)));
@@ -286,6 +291,13 @@ async function loadAdminProjects(){
     $("adminCount").textContent="—";console.error("Studio projects query failed:",error);
   }
 }
+function syncLayoutPreset(){
+  const selected=$("layoutStyleInput").value||"editorial";
+  document.querySelectorAll("[data-layout-preset]").forEach(button=>{
+    const active=button.dataset.layoutPreset===selected;
+    button.classList.toggle("active",active);button.setAttribute("aria-pressed",active?"true":"false");
+  });
+}
 function editProject(p){
   if(!p){$("editorMessage").textContent="Project data could not be loaded. Refresh the Published projects list and try again.";return;}
   $("projectId").value=p.id||"";
@@ -299,7 +311,8 @@ function editProject(p){
   $("externalUrl").value=p.external_url||"";
   $("description").value=p.description||"";
   $("detailContentInput").value=p.detail_content||"";
-  $("layoutStyleInput").value=p.layout_style||"editorial";
+  $("layoutStyleInput").value=["editorial","full-bleed","gallery-first","split","cinematic","magazine","minimal"].includes(p.layout_style)?p.layout_style:"editorial";
+  syncLayoutPreset();
   $("sortOrder").value=p.sort_order??0;
   $("videoUrl").value=p.video_url||"";
   $("coverImage").value="";$("galleryImages").value="";
@@ -308,7 +321,7 @@ function editProject(p){
   $("projectForm").scrollIntoView({behavior:"smooth",block:"start"});
 }
 function resetEditor(){
-  $("projectForm").reset();$("projectId").value="";$("year").value="2026";$("sortOrder").value="0";
+  $("projectForm").reset();$("projectId").value="";$("year").value="2026";$("sortOrder").value="0";syncLayoutPreset();
   $("saveProject").textContent="Publish project ↗";$("editorMessage").textContent="";
 }
 async function uploadImage(file,folder){
