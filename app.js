@@ -104,7 +104,28 @@ const emailLink=document.querySelector(".email-link");emailLink.href=`mailto:${S
 $("yearNow").textContent=new Date().getFullYear();
 $("projectGrid").addEventListener("click",e=>{const card=e.target.closest("[data-project-id]");if(card && !e.target.closest("a"))openProject(card.dataset.projectId);});
 $("projectGrid").addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches("[data-project-id]")){e.preventDefault();openProject(e.target.dataset.projectId);}});
-$("adminProjectList").addEventListener("click",e=>{const edit=e.target.closest("[data-edit]"),del=e.target.closest("[data-delete]");if(edit)editProject(adminProjects.find(p=>p.id===edit.dataset.edit));if(del)deleteProject(del.dataset.delete);});
+$("adminProjectList").addEventListener("click",async e=>{
+  const edit=e.target.closest("button[data-edit]"),del=e.target.closest("button[data-delete]");
+  if(edit){
+    e.preventDefault();e.stopPropagation();
+    const id=edit.dataset.edit;
+    let project=adminProjects.find(p=>String(p.id)===String(id));
+    if(!project){
+      edit.disabled=true;
+      try{
+        const {data,error}=await supabase.from("projects").select("*").eq("id",id).single();
+        if(error)throw error;
+        project=data;
+      }catch(error){
+        $("editorMessage").textContent="Could not open this project: "+(error.message||"Project not found.");
+        edit.disabled=false;return;
+      }
+      edit.disabled=false;
+    }
+    editProject(project);
+  }
+  if(del){e.preventDefault();e.stopPropagation();deleteProject(del.dataset.delete);}
+});
 $("backToWorks").addEventListener("click",navigateToWorks);
 $("closeLightbox").addEventListener("click",closeLightbox);
 $("lightboxPrev").addEventListener("click",()=>stepLightbox(-1));
@@ -266,12 +287,25 @@ async function loadAdminProjects(){
   }
 }
 function editProject(p){
-  if(!p)return;$("projectId").value=p.id;$("title").value=p.title;$("category").value=p.category;$("year").value=p.year||"";
-  $("externalUrl").value=p.external_url||"";$("description").value=p.description||"";
-  $("detailContentInput").value=p.detail_content||"";$("layoutStyleInput").value=p.layout_style||"editorial";
-  $("sortOrder").value=p.sort_order||0;$("videoUrl").value=p.video_url||"";$("coverImage").value="";$("galleryImages").value="";
-  $("saveProject").textContent="Update project ↗";$("editorMessage").textContent="Editing project. Upload a new thumbnail to replace the current one; existing gallery images are retained.";
-  window.scrollTo({top:0,behavior:"smooth"});
+  if(!p){$("editorMessage").textContent="Project data could not be loaded. Refresh the Published projects list and try again.";return;}
+  $("projectId").value=p.id||"";
+  $("title").value=p.title||"";
+  const category=$("category");
+  if(p.category&&!Array.from(category.options).some(option=>option.value===p.category)){
+    const option=document.createElement("option");option.value=p.category;option.textContent=p.category;category.appendChild(option);
+  }
+  category.value=p.category||"Other";
+  $("year").value=p.year||"";
+  $("externalUrl").value=p.external_url||"";
+  $("description").value=p.description||"";
+  $("detailContentInput").value=p.detail_content||"";
+  $("layoutStyleInput").value=p.layout_style||"editorial";
+  $("sortOrder").value=p.sort_order??0;
+  $("videoUrl").value=p.video_url||"";
+  $("coverImage").value="";$("galleryImages").value="";
+  $("saveProject").textContent="Update project";
+  $("editorMessage").textContent="Editing: "+(p.title||"Untitled project")+". Existing thumbnail and gallery images will be kept unless replaced or new images are added.";
+  $("projectForm").scrollIntoView({behavior:"smooth",block:"start"});
 }
 function resetEditor(){
   $("projectForm").reset();$("projectId").value="";$("year").value="2026";$("sortOrder").value="0";
