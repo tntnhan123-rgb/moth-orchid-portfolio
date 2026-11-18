@@ -25,7 +25,7 @@
 
   <main id="publicView">
     <section class="hero section-shell" id="home">
-      <div class="hero-topline"><span>Independent designer / Visual storyteller</span><span>Portfolio — 2026</span></div>
+      <div class="hero-topline"><span>Independent designer / Visual storyteller</span><span class="hero-moon-wrap"><span>Portfolio — 2026</span><span class="moon-phase moon-new" role="img" aria-label="New moon"></span></span></div>
       <div class="hero-center">
         <p class="script-title metal" id="homeEyebrow">Selected works</p>
         <h1 id="homeTitle">Neil</h1>
@@ -37,7 +37,7 @@
     </section>
 
     <section class="about section-shell section-pad" id="about">
-      <div class="section-index"><span>01</span><span>About the practice</span></div>
+      <div class="section-index"><span>01</span><span>About the practice</span><span class="moon-phase moon-waxing" role="img" aria-label="Waxing moon"></span></div>
       <div class="about-layout">
         <h2 id="aboutHeading">Between <em>form</em><br>and feeling.</h2>
         <div class="about-copy">
@@ -50,14 +50,21 @@
     </section>
 
     <section class="works section-shell section-pad" id="works">
-      <div class="section-index"><span>02</span><span>Selected archive</span></div>
+      <div class="section-index"><span>02</span><span>Selected archive</span><span class="moon-phase moon-full" role="img" aria-label="Full moon"></span></div>
       <div class="works-heading"><h2 id="worksHeading">Selected <em>works</em></h2><span id="projectCount" class="mono">00 PROJECTS</span></div>
       <div class="filter-row" id="filters" aria-label="Filter projects">
         <button class="filter active" data-filter="All">All</button>
-        <button class="filter" data-filter="Graphic Design">Graphic Design</button>
+        <button class="filter" data-filter="Graphic Designer">Graphic Designer</button>
         <button class="filter" data-filter="Visual Identity">Visual Identity</button>
         <button class="filter" data-filter="3D / CGI">3D / CGI</button>
         <button class="filter" data-filter="Motion">Motion</button>
+        <div class="subfilter-row" id="graphicSubfilters" hidden aria-label="Graphic design disciplines">
+          <button class="filter subfilter" data-filter="Brand Identity Design">Brand Identity Design</button>
+          <button class="filter subfilter" data-filter="Marketing & Advertising Design">Marketing &amp; Advertising Design</button>
+          <button class="filter subfilter" data-filter="Packaging Design">Packaging Design</button>
+          <button class="filter subfilter" data-filter="Publication Design">Publication Design</button>
+          <button class="filter subfilter" data-filter="Commercial Illustration">Commercial Illustration</button>
+        </div>
       </div>
       <div class="project-grid" id="projectGrid" aria-live="polite">
         <div class="loading-state">Loading selected works<span>✳</span></div>
@@ -70,7 +77,7 @@
     </section>
 
     <section class="contact section-shell section-pad" id="contact">
-      <div class="section-index"><span>03</span><span>Correspondence</span></div>
+      <div class="section-index"><span>03</span><span>Correspondence</span><span class="moon-phase moon-waning" role="img" aria-label="Waning moon"></span></div>
       <div class="contact-layout">
         <div><p class="script-title metal contact-script" id="contactEyebrow">Have a project?</p><h2>Let's make<br><em>it matter.</em></h2></div>
         <div class="contact-copy"><p id="contactText">Available for selected freelance projects, collaborations and creative opportunities.</p><a class="email-link" href="mailto:hello@example.com">HELLO@EXAMPLE.COM ↗</a><div class="social-links"><a href="#" data-social="behance">Behance ↗</a><a href="#" data-social="instagram">Instagram ↗</a></div></div>
@@ -137,7 +144,7 @@
           <input type="hidden" id="projectId">
           <div class="form-two">
             <label>Project title *<input id="title" required maxlength="120" placeholder="Project title"></label>
-            <label>Category<select id="category"><option>Graphic Design</option><option>Visual Identity</option><option>3D / CGI</option><option>Motion</option><option>Photography</option><option>Art Direction</option><option>Other</option></select></label>
+            <label>Category<select id="category"><option>Brand Identity Design</option><option>Marketing &amp; Advertising Design</option><option>Packaging Design</option><option>Publication Design</option><option>Commercial Illustration</option><option>Graphic Design</option><option>Visual Identity</option><option>3D / CGI</option><option>Motion</option><option>Photography</option><option>Art Direction</option><option>Other</option></select></label>
             <label>Year<input id="year" maxlength="4" value="2026" inputmode="numeric"></label>
             <label>External URL<input id="externalUrl" type="url" placeholder="https://..."></label>
             <label>Display order<input id="sortOrder" type="number" value="0" step="1"></label>
