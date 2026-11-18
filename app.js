@@ -122,11 +122,24 @@ function routeFromHash(){
 }
 async function loadProjects(){
   if(!supabase){$("projectGrid").innerHTML='<div class="empty-state">Connect Supabase to publish your archive.</div>';$("projectCount").textContent="0 PROJECTS";return;}
-  const {data,error}=await supabase.from("projects").select("*,project_images(*)").order("sort_order",{ascending:true}).order("created_at",{ascending:false});
-  if(error){$("projectGrid").innerHTML='<div class="empty-state">Unable to load projects. Check database setup.</div>';console.error(error);return;}
-  projects=(data||[]).map(p=>({...p,project_images:(p.project_images||[]).sort((a,b)=>(a.sort_order||0)-(b.sort_order||0))}));
-  renderProjects();
-  routeFromHash();
+  $("projectGrid").innerHTML='<div class="loading-state"><span class="moon-loader" aria-hidden="true"></span><span>Loading selected works</span></div>';
+  try{
+    const {data,error}=await supabase.from("projects").select("*").order("sort_order",{ascending:true}).order("created_at",{ascending:false});
+    if(error)throw error;
+    projects=data||[];
+    const ids=projects.map(p=>p.id);
+    if(ids.length){
+      const {data:images,error:imageError}=await supabase.from("project_images").select("*").in("project_id",ids).order("sort_order",{ascending:true});
+      if(!imageError){
+        const grouped={};(images||[]).forEach(img=>(grouped[img.project_id]??=[]).push(img));
+        projects=projects.map(p=>({...p,project_images:grouped[p.id]||[]}));
+      }else projects=projects.map(p=>({...p,project_images:[]}));
+    }else projects=[];
+    renderProjects();routeFromHash();
+  }catch(error){
+    $("projectGrid").innerHTML='<div class="empty-state">Unable to load projects. Check database permissions and setup.</div>';
+    $("projectCount").textContent="0 PROJECTS";console.error("Public projects query failed:",error);
+  }
 }
 function renderProjects(){
   const graphicCategories=["Graphic Design","Brand Identity Design","Marketing & Advertising Design","Packaging Design","Publication Design","Commercial Illustration"];
@@ -213,15 +226,34 @@ async function showDashboard(){
   $("authPanel").hidden=true;$("dashboard").hidden=false;await loadHome();fillHomeForm();await loadAdminProjects();await loadAnalytics();
 }
 async function loadAdminProjects(){
-  const {data,error}=await supabase.from("projects").select("*,project_images(*)").order("sort_order",{ascending:true}).order("created_at",{ascending:false});
-  if(error){$("adminProjectList").textContent="Could not load projects.";return;}
-  const list=data||[];$("adminCount").textContent=`${list.length} ITEMS`;
-  $("adminProjectList").innerHTML=list.map(p=>`<div class="admin-project">
-    ${p.thumbnail_url||p.image_url?`<img class="admin-thumb" src="${escapeHtml(p.thumbnail_url||p.image_url)}" alt="">`:'<div class="admin-thumb"></div>'}
-    <div class="admin-project-info"><strong>${escapeHtml(p.title)}</strong><span>${escapeHtml(p.category)} · ${escapeHtml(p.year||"")} · ORDER ${p.sort_order||0}</span></div>
-    <div class="admin-actions"><button data-edit="${p.id}">Edit</button><button data-delete="${p.id}">Delete</button></div>
-    <div class="admin-project-extra">${(p.project_images||[]).length} gallery images ${p.video_url?"· SHOWREEL":""}</div>
-  </div>`).join("")||'<p class="form-message">No projects published yet.</p>';
+  const container=$("adminProjectList");
+  container.innerHTML='<div class="loading-state admin-loading"><span class="moon-loader" aria-hidden="true"></span><span>Loading published projects</span></div>';
+  try{
+    const {data,error}=await supabase.from("projects").select("*").order("sort_order",{ascending:true}).order("created_at",{ascending:false});
+    if(error)throw error;
+    const list=data||[];projects=list.map(p=>({...p,project_images:[]}));
+    const ids=list.map(p=>p.id);
+    if(ids.length){
+      const {data:images,error:imageError}=await supabase.from("project_images").select("project_id").in("project_id",ids);
+      if(!imageError){
+        const counts={};(images||[]).forEach(img=>counts[img.project_id]=(counts[img.project_id]||0)+1);
+        projects=projects.map(p=>({...p,gallery_count:counts[p.id]||0}));
+      }
+    }
+    $("adminCount").textContent=`${list.length} ITEMS`;
+    container.innerHTML=list.map(p=>{
+      const count=(projects.find(x=>x.id===p.id)||{}).gallery_count||0;
+      return `<div class="admin-project">
+        ${p.thumbnail_url||p.image_url?`<img class="admin-thumb" src="${escapeHtml(p.thumbnail_url||p.image_url)}" alt="">`:'<div class="admin-thumb"></div>'}
+        <div class="admin-project-info"><strong>${escapeHtml(p.title||"Untitled project")}</strong><span>${escapeHtml(p.category||"Uncategorized")} · ${escapeHtml(p.year||"")} · ORDER ${p.sort_order||0}</span></div>
+        <div class="admin-actions"><button type="button" data-edit="${p.id}">Edit</button><button type="button" data-delete="${p.id}">Delete</button></div>
+        <div class="admin-project-extra">${count} gallery images ${p.video_url?"· SHOWREEL":""}</div>
+      </div>`;
+    }).join("")||'<p class="form-message">No projects published yet.</p>';
+  }catch(error){
+    container.innerHTML='<p class="form-message admin-error">Could not load published projects. '+escapeHtml(error.message||"Check the projects table permissions.")+'</p>';
+    $("adminCount").textContent="—";console.error("Studio projects query failed:",error);
+  }
 }
 function editProject(p){
   if(!p)return;$("projectId").value=p.id;$("title").value=p.title;$("category").value=p.category;$("year").value=p.year||"";
