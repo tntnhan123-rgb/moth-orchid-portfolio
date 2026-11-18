@@ -9,10 +9,38 @@ let projects = [], activeFilter = "All", currentDetail = null, lightboxItems = [
 const HOME_DEFAULTS={heroEyebrow:"Selected works",heroTitle:"MOTH / ORCHID",heroIntro:"A visual practice exploring the tension between the organic and the artificial — through image, identity, motion and atmosphere.",heroButton:"Explore the archive",aboutHeading:"Between form and feeling.",aboutLead:"Building visual languages at the intersection of design, atmosphere and storytelling.",aboutParagraph1:"I work across graphic design, visual identity and digital imagery. Drawn to cinematic contrast, botanical structures, tactile surfaces and details that reward a closer look.",aboutParagraph2:"This portfolio is a living archive of selected commissions, self-initiated studies and ongoing experiments.",worksHeading:"Selected works",contactEyebrow:"Have a project?",contactText:"Available for selected freelance projects, collaborations and creative opportunities.",font:"Montserrat",scale:"1",textColor:"#ece9e3",mutedColor:"#999999"};
 const HOME_INPUTS={homeEyebrowInput:"heroEyebrow",homeTitleInput:"heroTitle",homeIntroInput:"heroIntro",homeButtonInput:"heroButton",aboutHeadingInput:"aboutHeading",aboutLeadInput:"aboutLead",aboutParagraph1Input:"aboutParagraph1",aboutParagraph2Input:"aboutParagraph2",worksHeadingInput:"worksHeading",contactEyebrowInput:"contactEyebrow",contactTextInput:"contactText"};
 let homeSettings={...HOME_DEFAULTS};
-function applyHome(s){s={...HOME_DEFAULTS,...s};const put=(id,v)=>{const el=$(id);if(el)el.textContent=v||"";};Object.entries({homeEyebrow:"heroEyebrow",homeTitle:"heroTitle",homeIntro:"heroIntro",homeButtonText:"heroButton",aboutHeading:"aboutHeading",aboutLead:"aboutLead",aboutParagraph1:"aboutParagraph1",aboutParagraph2:"aboutParagraph2",worksHeading:"worksHeading",contactEyebrow:"contactEyebrow",contactText:"contactText"}).forEach(([id,key])=>put(id,s[key]));document.documentElement.style.setProperty("--site-font",s.font==="Arial"?"Arial, sans-serif":'"'+s.font+'", sans-serif');document.documentElement.style.setProperty("--type-scale",String(Number(s.scale)||1));document.documentElement.style.setProperty("--text-color",s.textColor||"#ece9e3");document.documentElement.style.setProperty("--muted-text-color",s.mutedColor||"#999999");homeSettings=s;}
+function applyElementStyles(s){
+  const targets={heroTitle:"#homeTitle",heroEyebrow:"#homeEyebrow",sectionHeadings:".about h2,.works h2,.contact h2,.detail-top h1",sectionIndex:".section-index",navigation:".main-nav a",projectTitle:".project-title",bodyCopy:".hero-intro,.about-copy p,.contact-copy p,.project-description,.detail-top p"};
+  let css="";
+  Object.entries(s.elementStyles||{}).forEach(([key,v])=>{
+    const selector=targets[key];if(!selector||!v)return;
+    const rules=[];
+    if(v.font)rules.push("font-family:"+JSON.stringify(v.font)+",sans-serif");
+    if(v.size)rules.push("font-size:"+Math.max(8,Math.min(180,Number(v.size)))+"px");
+    if(v.gradient)rules.push("background-image:linear-gradient(90deg,"+v.gradientStart+","+v.gradientEnd+");background-clip:text;-webkit-background-clip:text;color:transparent");
+    else if(v.color)rules.push("color:"+v.color);
+    if(rules.length)css+=selector+"{"+rules.join(";")+"}";
+  });
+  let tag=$("elementStyleOverrides");if(!tag){tag=document.createElement("style");tag.id="elementStyleOverrides";document.head.appendChild(tag);}tag.textContent=css;
+  const root=document.documentElement;
+  root.style.setProperty("--bg",s.backgroundGradient?"linear-gradient(135deg,"+(s.backgroundColor||"#080808")+","+(s.backgroundEnd||"#17120f")+")":(s.backgroundColor||"#080808"));
+  document.body.style.background=s.backgroundGradient?"linear-gradient(135deg,"+(s.backgroundColor||"#080808")+","+(s.backgroundEnd||"#17120f")+") fixed":(s.backgroundColor||"#080808");
+}
+function applyHome(s){s={...HOME_DEFAULTS,...s};const put=(id,v)=>{const el=$(id);if(el)el.textContent=v||"";};Object.entries({homeEyebrow:"heroEyebrow",homeTitle:"heroTitle",homeIntro:"heroIntro",homeButtonText:"heroButton",aboutHeading:"aboutHeading",aboutLead:"aboutLead",aboutParagraph1:"aboutParagraph1",aboutParagraph2:"aboutParagraph2",worksHeading:"worksHeading",contactEyebrow:"contactEyebrow",contactText:"contactText"}).forEach(([id,key])=>put(id,s[key]));document.documentElement.style.setProperty("--site-font",s.font==="Arial"?"Arial, sans-serif":'"'+s.font+'", sans-serif');document.documentElement.style.setProperty("--type-scale",String(Number(s.scale)||1));document.documentElement.style.setProperty("--text-color",s.textColor||"#ece9e3");document.documentElement.style.setProperty("--muted-text-color",s.mutedColor||"#999999");applyElementStyles(s);homeSettings=s;}
 async function loadHome(){if(!supabase){applyHome(HOME_DEFAULTS);return;}const {data,error}=await supabase.from("site_settings").select("settings").eq("id","homepage").maybeSingle();if(error){console.warn("Homepage settings unavailable",error);applyHome(HOME_DEFAULTS);return;}applyHome(data?.settings||HOME_DEFAULTS);}
-function fillHomeForm(){Object.entries(HOME_INPUTS).forEach(([id,key])=>$(id).value=homeSettings[key]||"");$("siteFontInput").value=homeSettings.font||"Montserrat";$("siteScaleInput").value=homeSettings.scale||"1";$("siteTextColorInput").value=homeSettings.textColor||"#ece9e3";$("siteMutedColorInput").value=homeSettings.mutedColor||"#999999";}
-async function saveHome(e){e.preventDefault();const settings={};Object.entries(HOME_INPUTS).forEach(([id,key])=>settings[key]=$(id).value.trim());settings.font=$("siteFontInput").value;settings.scale=$("siteScaleInput").value;settings.textColor=$("siteTextColorInput").value;settings.mutedColor=$("siteMutedColorInput").value;$("saveHomepage").disabled=true;$("homepageMessage").textContent="Saving…";try{const {error}=await supabase.from("site_settings").upsert({id:"homepage",settings,updated_at:new Date().toISOString()},{onConflict:"id"});if(error)throw error;applyHome(settings);$("homepageMessage").textContent="Homepage updated successfully.";toast("Homepage updated.");}catch(err){$("homepageMessage").textContent=err.message||"Unable to save homepage.";}finally{$("saveHomepage").disabled=false;}}
+function fillHomeForm(){Object.entries(HOME_INPUTS).forEach(([id,key])=>$(id).value=homeSettings[key]||"");$("siteFontInput").value=homeSettings.font||"Montserrat";$("siteScaleInput").value=homeSettings.scale||"1";$("siteTextColorInput").value=homeSettings.textColor||"#ece9e3";$("siteMutedColorInput").value=homeSettings.mutedColor||"#999999";$("siteBackgroundInput").value=homeSettings.backgroundColor||"#080808";$("siteBackgroundEndInput").value=homeSettings.backgroundEnd||"#17120f";$("siteBackgroundGradientInput").checked=!!homeSettings.backgroundGradient;loadElementStyleInputs();}
+function loadElementStyleInputs(){
+  const v=(homeSettings.elementStyles||{})[$("styleTargetInput").value]||{};
+  $("elementFontInput").value=v.font||"";$("elementSizeInput").value=v.size||"";
+  $("elementColorInput").value=v.color||"#ece9e3";$("elementGradientStartInput").value=v.gradientStart||"#ece9e3";$("elementGradientEndInput").value=v.gradientEnd||"#777777";$("elementGradientEnabledInput").checked=!!v.gradient;
+}
+function updateSelectedElementStyle(reset=false){
+  const styles={...(homeSettings.elementStyles||{})},key=$("styleTargetInput").value;
+  if(reset)delete styles[key];
+  else styles[key]={font:$("elementFontInput").value,size:$("elementSizeInput").value,color:$("elementColorInput").value,gradientStart:$("elementGradientStartInput").value,gradientEnd:$("elementGradientEndInput").value,gradient:$("elementGradientEnabledInput").checked};
+  homeSettings={...homeSettings,elementStyles:styles};applyElementStyles(homeSettings);
+}
+async function saveHome(e){e.preventDefault();const settings={...homeSettings};Object.entries(HOME_INPUTS).forEach(([id,key])=>settings[key]=$(id).value.trim());settings.font=$("siteFontInput").value;settings.scale=$("siteScaleInput").value;settings.textColor=$("siteTextColorInput").value;settings.mutedColor=$("siteMutedColorInput").value;settings.backgroundColor=$("siteBackgroundInput").value;settings.backgroundEnd=$("siteBackgroundEndInput").value;settings.backgroundGradient=$("siteBackgroundGradientInput").checked;settings.elementStyles=homeSettings.elementStyles||{};$("saveHomepage").disabled=true;$("homepageMessage").textContent="Saving…";try{const {error}=await supabase.from("site_settings").upsert({id:"homepage",settings,updated_at:new Date().toISOString()},{onConflict:"id"});if(error)throw error;applyHome(settings);fillHomeForm();$("homepageMessage").textContent="Homepage updated successfully.";toast("Homepage updated.");}catch(err){$("homepageMessage").textContent=err.message||"Unable to save homepage.";}finally{$("saveHomepage").disabled=false;}}
 function resetHome(){applyHome(HOME_DEFAULTS);fillHomeForm();$("homepageMessage").textContent="Default content loaded. Press Save homepage to publish.";}
 
 const localSessionKey = "moth_orchid_session_id";
@@ -36,6 +64,11 @@ $("filters").addEventListener("click",e=>{const b=e.target.closest("[data-filter
 $("loginForm").addEventListener("submit",signIn);$("logoutButton").addEventListener("click",signOut);
 $("projectForm").addEventListener("submit",saveProject);$("resetForm").addEventListener("click",resetEditor);
 $("homepageForm").addEventListener("submit",saveHome);$("resetHomepage").addEventListener("click",resetHome);
+$("styleTargetInput").addEventListener("change",loadElementStyleInputs);
+$("previewElementStyle").addEventListener("click",()=>updateSelectedElementStyle(false));
+$("resetElementStyle").addEventListener("click",()=>{updateSelectedElementStyle(true);loadElementStyleInputs();});
+["elementFontInput","elementSizeInput","elementColorInput","elementGradientStartInput","elementGradientEndInput","elementGradientEnabledInput"].forEach(id=>$(id).addEventListener("input",()=>updateSelectedElementStyle(false)));
+["siteBackgroundInput","siteBackgroundEndInput","siteBackgroundGradientInput"].forEach(id=>$(id).addEventListener("input",()=>{homeSettings={...homeSettings,backgroundColor:$("siteBackgroundInput").value,backgroundEnd:$("siteBackgroundEndInput").value,backgroundGradient:$("siteBackgroundGradientInput").checked};applyElementStyles(homeSettings);}));
 $("backToWorks").addEventListener("click",()=>navigateToWorks());
 document.querySelectorAll("[data-social]").forEach(a=>{const k=a.dataset.social;if(SITE[k])a.href=SITE[k];});
 $("emailLink")?.setAttribute("href",`mailto:${SITE.email}`);
