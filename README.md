@@ -1,4 +1,4 @@
-# MOTH / ORCHID — Portfolio v3
+# Neil — Portfolio v3
 
 Responsive editorial portfolio with:
 - Dedicated project detail route (`#project/<id>`)
