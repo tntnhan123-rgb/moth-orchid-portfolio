@@ -8,6 +8,29 @@ let projects = [], activeFilter = "All", currentDetail = null, lightboxItems = [
 
 const HOME_DEFAULTS={heroEyebrow:"Selected works",heroTitle:"Neil",heroIntro:"A visual practice exploring the tension between the organic and the artificial — through image, identity, motion and atmosphere.",heroButton:"Explore the archive",aboutHeading:"Between form and feeling.",aboutLead:"Building visual languages at the intersection of design, atmosphere and storytelling.",aboutParagraph1:"I work across graphic design, visual identity and digital imagery. Drawn to cinematic contrast, botanical structures, tactile surfaces and details that reward a closer look.",aboutParagraph2:"This portfolio is a living archive of selected commissions, self-initiated studies and ongoing experiments.",worksHeading:"Selected works",contactEyebrow:"Have a project?",contactText:"Available for selected freelance projects, collaborations and creative opportunities.",font:"Montserrat",scale:"1",textColor:"#ece9e3",mutedColor:"#999999"};
 const HOME_INPUTS={homeEyebrowInput:"heroEyebrow",homeTitleInput:"heroTitle",homeIntroInput:"heroIntro",homeButtonInput:"heroButton",aboutHeadingInput:"aboutHeading",aboutLeadInput:"aboutLead",aboutParagraph1Input:"aboutParagraph1",aboutParagraph2Input:"aboutParagraph2",worksHeadingInput:"worksHeading",contactEyebrowInput:"contactEyebrow",contactTextInput:"contactText"};
+let currentLang=localStorage.getItem("neil-language")==="vi"?"vi":"en";
+const LANG={
+en:{about:"About",works:"Works",contact:"Contact",heroTop:"Independent designer / Visual storyteller",heroButton:"Explore the archive",scroll:"Scroll to discover",aboutIndex:"About the practice",aboutHeading:"Between form and feeling.",aboutLead:"Building visual languages at the intersection of design, atmosphere and storytelling.",aboutP1:"I work across graphic design, visual identity and digital imagery. Drawn to cinematic contrast, botanical structures, tactile surfaces and details that reward a closer look.",aboutP2:"This portfolio is a living archive of selected commissions, self-initiated studies and ongoing experiments.",worksIndex:"Selected archive",worksHeading:"Selected works",all:"All",contactIndex:"Correspondence",contactEyebrow:"Have a project?",contactText:"Available for selected freelance projects, collaborations and creative opportunities.",contactHeading:"Let's make it matter.",footer:"Designed with intention.",back:"← Back to selected works",projectOpen:"Open project details ↗",projectExplore:"Explore project ↗",empty:"Selected works will appear here.",none:"No projects in this category yet.",gallery:"Visual archive",galleryHint:"IMAGES · CLICK TO EXPAND",external:"Visit external project ↗"},
+vi:{about:"Giới thiệu",works:"Dự án",contact:"Liên hệ",heroTop:"Nhà thiết kế độc lập / Kể chuyện bằng hình ảnh",heroButton:"Khám phá dự án",scroll:"Cuộn để khám phá",aboutIndex:"Về định hướng sáng tạo",aboutHeading:"Giao thoa giữa hình thái và cảm xúc.",aboutLead:"Xây dựng ngôn ngữ thị giác tại điểm giao thoa giữa thiết kế, bầu không khí và nghệ thuật kể chuyện.",aboutP1:"Tôi thực hiện các dự án thiết kế đồ họa, nhận diện thương hiệu và hình ảnh kỹ thuật số. Tôi bị thu hút bởi tương phản điện ảnh, cấu trúc thực vật, bề mặt giàu chất liệu và những chi tiết cần được quan sát kỹ hơn.",aboutP2:"Portfolio này là kho lưu trữ sống gồm các dự án thương mại được tuyển chọn, nghiên cứu cá nhân và những thử nghiệm đang tiếp diễn.",worksIndex:"Tuyển tập dự án",worksHeading:"Dự án tiêu biểu",all:"Tất cả",contactIndex:"Kết nối",contactEyebrow:"Bạn có dự án?",contactText:"Tôi sẵn sàng nhận một số dự án freelance, hợp tác sáng tạo và cơ hội nghề nghiệp phù hợp.",contactHeading:"Cùng tạo nên điều ý nghĩa.",footer:"Được thiết kế với chủ đích.",back:"← Quay lại danh sách dự án",projectOpen:"Xem chi tiết dự án ↗",projectExplore:"Khám phá dự án ↗",empty:"Các dự án tiêu biểu sẽ được hiển thị tại đây.",none:"Chưa có dự án trong danh mục này.",gallery:"Thư viện hình ảnh",galleryHint:"HÌNH ẢNH · NHẤN ĐỂ PHÓNG TO",external:"Xem dự án bên ngoài ↗"}
+};
+function tr(key){return LANG[currentLang][key]||LANG.en[key]||key;}
+function applyLanguage(){
+ document.documentElement.lang=currentLang;
+ const text=(selector,key)=>{const el=document.querySelector(selector);if(el)el.textContent=tr(key);};
+ text(".main-nav a[href='#about']","about");text(".main-nav a[href='#works']","works");text(".main-nav a[href='#contact']","contact");
+ text(".hero-topline span:first-child","heroTop");text(".text-link span:first-child","heroButton");
+ const scroll=document.querySelector(".scroll-cue");if(scroll)scroll.innerHTML=tr("scroll")+' <i></i>';
+ text("#about .section-index span:last-child","aboutIndex");text("#aboutHeading","aboutHeading");text("#aboutLead","aboutLead");text("#aboutParagraph1","aboutP1");text("#aboutParagraph2","aboutP2");
+ text("#works .section-index span:last-child","worksIndex");text("#worksHeading","worksHeading");text("#filters [data-filter='All']","all");
+ text("#contact .section-index span:last-child","contactIndex");text("#contactEyebrow","contactEyebrow");text("#contactText","contactText");
+ const ch=document.querySelector("#contact h2");if(ch)ch.innerHTML=currentLang==="vi"?"Cùng tạo nên<br><em>điều ý nghĩa.</em>":"Let's make<br><em>it matter.</em>";
+ const ft=document.querySelector(".site-footer > span:last-child");if(ft)ft.textContent=tr("footer");
+ const toggle=$("languageToggle");if(toggle){toggle.textContent=currentLang==="en"?"VI":"EN";toggle.setAttribute("aria-label",currentLang==="en"?"Chuyển sang tiếng Việt":"Switch to English");}
+ document.querySelectorAll(".filter").forEach(b=>{if(b.dataset.filter==="All")b.textContent=tr("all");else b.textContent=currentLang==="vi"?({"Graphic Design":"Thiết kế đồ họa","Visual Identity":"Nhận diện thương hiệu","3D / CGI":"3D / CGI","Motion":"Chuyển động"}[b.dataset.filter]||b.dataset.filter):b.dataset.filter;});
+ if(projects.length)renderProjects();
+ if(currentDetail)openProject(currentDetail.id,false);
+}
+
 let homeSettings={...HOME_DEFAULTS};
 function applyElementStyles(s){
   const targets={heroTitle:"#homeTitle",heroEyebrow:"#homeEyebrow",sectionHeadings:".about h2,.works h2,.contact h2,.detail-top h1",sectionIndex:".section-index",navigation:".main-nav a",projectTitle:".project-title",bodyCopy:".hero-intro,.about-copy p,.contact-copy p,.project-description,.detail-top p"};
@@ -57,7 +80,7 @@ function toast(message){const el=$("toast");el.textContent=message;el.hidden=fal
 function setPublicView(show){$("publicView").hidden=!show;$("adminView").hidden=show;document.querySelector(".site-footer").hidden=!show;}
 function openAdmin(){setPublicView(false);history.replaceState(null,"",location.pathname+location.search+"#studio");checkSession();window.scrollTo(0,0);}
 function closeAdmin(){setPublicView(true);$("projectDetail").hidden=true;history.replaceState(null,"",location.pathname+location.search);window.scrollTo(0,0);}
-$("adminEntry").addEventListener("click",openAdmin);$("closeAdmin").addEventListener("click",closeAdmin);
+$("adminEntry").addEventListener("click",openAdmin);$("closeAdmin").addEventListener("click",closeAdmin);\n$("languageToggle").addEventListener("click",()=>{currentLang=currentLang==="en"?"vi":"en";localStorage.setItem("neil-language",currentLang);applyLanguage();});
 $("menuToggle").addEventListener("click",()=>{const n=document.querySelector(".main-nav");n.classList.toggle("open");$("menuToggle").setAttribute("aria-expanded",n.classList.contains("open")?"true":"false");});
 document.querySelectorAll(".main-nav a").forEach(a=>a.addEventListener("click",()=>document.querySelector(".main-nav").classList.remove("open")));
 $("filters").addEventListener("click",e=>{const b=e.target.closest("[data-filter]");if(!b)return;activeFilter=b.dataset.filter;document.querySelectorAll(".filter").forEach(x=>x.classList.toggle("active",x===b));renderProjects();});
@@ -103,7 +126,7 @@ async function loadProjects(){
 function renderProjects(){
   const shown=activeFilter==="All"?projects:projects.filter(p=>p.category===activeFilter);
   $("projectCount").textContent=`${String(projects.length).padStart(2,"0")} PROJECTS`;
-  if(!shown.length){$("projectGrid").innerHTML=`<div class="empty-state">${projects.length?"No projects in this category yet.":"Selected works will appear here."}</div>`;return;}
+  if(!shown.length){$("projectGrid").innerHTML=`<div class="empty-state">${projects.length?tr("none"):tr("empty")}</div>`;return;}
   $("projectGrid").innerHTML=shown.map(p=>{
     const img=p.thumbnail_url||p.image_url||"";
     const cover=img?`<img src="${escapeHtml(img)}" alt="${escapeHtml(p.title)}" loading="lazy">`:'<div class="cover-placeholder">M / O</div>';
@@ -111,7 +134,7 @@ function renderProjects(){
     return `<article class="project-card" data-project-id="${escapeHtml(p.id)}" tabindex="0" role="link" aria-label="Open ${escapeHtml(p.title)}">
       <div class="project-cover">${cover}</div><div class="project-meta"><span>${escapeHtml(p.category||"Selected work")}</span><span>${escapeHtml(p.year||"")}</span></div>
       <h3 class="project-title">${escapeHtml(p.title)}</h3><p class="project-description">${escapeHtml(p.description||"")}</p>
-      ${link?`<span class="project-open">Open project details ↗</span>`:`<span class="project-open">Explore project ↗</span>`}
+      ${link?`<span class="project-open">${tr("projectOpen")}</span>`:`<span class="project-open">${tr("projectExplore")}</span>`}
     </article>`;
   }).join("");
 }
@@ -131,8 +154,8 @@ function openProject(id,updateHash=true){
     <div class="detail-top"><div><div class="section-index"><span>PROJECT</span><span>${escapeHtml(p.category||"Selected work")} / ${escapeHtml(p.year||"")}</span></div><h1>${escapeHtml(p.title)}</h1></div><p>${escapeHtml(p.description||"")}</p></div>
     ${cover?`<img class="detail-hero" src="${escapeHtml(cover)}" alt="${escapeHtml(p.title)}">`:""}
     ${video?`<div class="detail-video">${video}</div>`:""}
-    ${gallery.length?`<div class="gallery-heading"><h3>Visual archive</h3><span class="mono">${String(gallery.length).padStart(2,"0")} IMAGES · CLICK TO EXPAND</span></div><div class="detail-gallery">${gallery.map((src,i)=>`<button class="gallery-thumb" data-gallery-index="${i}" aria-label="View image ${i+1}"><img src="${escapeHtml(src)}" alt="${escapeHtml(p.title)} — image ${i+1}" loading="lazy"></button>`).join("")}</div>`:""}
-    ${safeUrl(p.external_url||"")?`<a class="project-open" href="${escapeHtml(safeUrl(p.external_url))}" target="_blank" rel="noopener noreferrer">Visit external project ↗</a>`:""}`;
+    ${gallery.length?`<div class="gallery-heading"><h3>${tr("gallery")}</h3><span class="mono">${String(gallery.length).padStart(2,"0")} ${tr("galleryHint")}</span></div><div class="detail-gallery">${gallery.map((src,i)=>`<button class="gallery-thumb" data-gallery-index="${i}" aria-label="View image ${i+1}"><img src="${escapeHtml(src)}" alt="${escapeHtml(p.title)} — image ${i+1}" loading="lazy"></button>`).join("")}</div>`:""}
+    ${safeUrl(p.external_url||"")?`<a class="project-open" href="${escapeHtml(safeUrl(p.external_url))}" target="_blank" rel="noopener noreferrer">${tr("external")}</a>`:""}`;
   $("detailContent").querySelectorAll("[data-gallery-index]").forEach(b=>b.addEventListener("click",()=>openLightbox(gallery,Number(b.dataset.galleryIndex),p.title)));
   if(updateHash)history.pushState(null,"",`#project/${p.id}`);
   trackEvent("project_view",p.id);
