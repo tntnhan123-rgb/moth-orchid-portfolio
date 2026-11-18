@@ -150,7 +150,9 @@
             <label>Display order<input id="sortOrder" type="number" value="0" step="1"></label>
             <label>Showreel video URL<input id="videoUrl" type="url" placeholder="YouTube / Vimeo / MP4 URL"></label>
           </div>
-          <label>Short description<textarea id="description" rows="3" maxlength="500" placeholder="Concept, role, medium..."></textarea></label>
+          <label>Short description<textarea id="description" rows="3" maxlength="500" placeholder="Short summary shown on the archive card..."></textarea></label>
+          <label>Detailed project content<textarea id="detailContentInput" rows="7" placeholder="Write the full project story, creative direction, process, role and outcomes. Separate paragraphs with a blank line."></textarea></label>
+          <label>Project detail layout<select id="layoutStyleInput"><option value="editorial">Editorial — title, summary and image</option><option value="full-bleed">Full bleed — large image first</option><option value="gallery-first">Gallery first — image-led story</option><option value="split">Split — text and media side by side</option></select></label>
           <label>Project thumbnail<input id="coverImage" type="file" accept="image/jpeg,image/png,image/webp"></label>
           <label>Gallery images — select multiple<input id="galleryImages" type="file" accept="image/jpeg,image/png,image/webp" multiple></label>
           <div class="upload-hint">JPG, PNG or WebP · Recommended 1600 × 1200 px · Maximum 8 MB per image. Thumbnail and gallery images are stored separately.</div>
