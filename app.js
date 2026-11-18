@@ -122,7 +122,7 @@ function routeFromHash(){
 }
 async function loadProjects(){
   if(!supabase){$("projectGrid").innerHTML='<div class="empty-state">Connect Supabase to publish your archive.</div>';$("projectCount").textContent="0 PROJECTS";return;}
-  $("projectGrid").innerHTML='<div class="loading-state"><span class="moon-loader" aria-hidden="true"></span><span>Loading selected works</span></div>';
+  $("projectGrid").innerHTML='<div class="loading-state"><span class="moon-loader" aria-hidden="true"></span></div>';
   try{
     const {data,error}=await supabase.from("projects").select("*").order("sort_order",{ascending:true}).order("created_at",{ascending:false});
     if(error)throw error;
@@ -227,7 +227,7 @@ async function showDashboard(){
 }
 async function loadAdminProjects(){
   const container=$("adminProjectList");
-  container.innerHTML='<div class="loading-state admin-loading"><span class="moon-loader" aria-hidden="true"></span><span>Loading published projects</span></div>';
+  container.innerHTML='<div class="loading-state admin-loading"><span class="moon-loader" aria-hidden="true"></span></div>';
   try{
     const {data,error}=await supabase.from("projects").select("*").order("sort_order",{ascending:true}).order("created_at",{ascending:false});
     if(error)throw error;
