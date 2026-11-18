@@ -4,7 +4,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, SITE } from "./config.js";
 const $ = id => document.getElementById(id);
 const configured = !SUPABASE_URL.includes("YOUR-PROJECT") && !SUPABASE_ANON_KEY.includes("YOUR_SUPABASE");
 const supabase = configured ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
-let projects = [], activeFilter = "All", currentDetail = null, lightboxItems = [], lightboxIndex = 0;
+let projects = [], adminProjects = [], activeFilter = "All", currentDetail = null, lightboxItems = [], lightboxIndex = 0;
 
 const HOME_DEFAULTS={heroEyebrow:"Selected works",heroTitle:"Neil",heroIntro:"A visual practice exploring the tension between the organic and the artificial — through image, identity, motion and atmosphere.",heroButton:"Explore the archive",aboutHeading:"Between form and feeling.",aboutLead:"Building visual languages at the intersection of design, atmosphere and storytelling.",aboutParagraph1:"I work across graphic design, visual identity and digital imagery. Drawn to cinematic contrast, botanical structures, tactile surfaces and details that reward a closer look.",aboutParagraph2:"This portfolio is a living archive of selected commissions, self-initiated studies and ongoing experiments.",worksHeading:"Selected works",contactEyebrow:"Have a project?",contactText:"Available for selected freelance projects, collaborations and creative opportunities.",font:"Montserrat",scale:"1",textColor:"#ece9e3",mutedColor:"#999999"};
 const HOME_INPUTS={homeEyebrowInput:"heroEyebrow",homeTitleInput:"heroTitle",homeIntroInput:"heroIntro",homeButtonInput:"heroButton",aboutHeadingInput:"aboutHeading",aboutLeadInput:"aboutLead",aboutParagraph1Input:"aboutParagraph1",aboutParagraph2Input:"aboutParagraph2",worksHeadingInput:"worksHeading",contactEyebrowInput:"contactEyebrow",contactTextInput:"contactText"};
@@ -104,7 +104,7 @@ const emailLink=document.querySelector(".email-link");emailLink.href=`mailto:${S
 $("yearNow").textContent=new Date().getFullYear();
 $("projectGrid").addEventListener("click",e=>{const card=e.target.closest("[data-project-id]");if(card && !e.target.closest("a"))openProject(card.dataset.projectId);});
 $("projectGrid").addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches("[data-project-id]")){e.preventDefault();openProject(e.target.dataset.projectId);}});
-$("adminProjectList").addEventListener("click",e=>{const edit=e.target.closest("[data-edit]"),del=e.target.closest("[data-delete]");if(edit)editProject(projects.find(p=>p.id===edit.dataset.edit));if(del)deleteProject(del.dataset.delete);});
+$("adminProjectList").addEventListener("click",e=>{const edit=e.target.closest("[data-edit]"),del=e.target.closest("[data-delete]");if(edit)editProject(adminProjects.find(p=>p.id===edit.dataset.edit));if(del)deleteProject(del.dataset.delete);});
 $("backToWorks").addEventListener("click",navigateToWorks);
 $("closeLightbox").addEventListener("click",closeLightbox);
 $("lightboxPrev").addEventListener("click",()=>stepLightbox(-1));
@@ -114,11 +114,14 @@ document.addEventListener("keydown",e=>{if($("lightbox")&&!$("lightbox").hidden)
 window.addEventListener("hashchange",routeFromHash);
 if(location.hash==="#studio")openAdmin();else routeFromHash();
 loadHome();
+loadProjects();
 
 function routeFromHash(){
   if(location.hash==="#studio"){openAdmin();return;}
   const match=location.hash.match(/^#project\/([a-f0-9-]+)$/i);
-  if(match && projects.length)openProject(match[1],false);
+  if(match){if(projects.length)openProject(match[1],false);return;}
+  $("projectDetail").hidden=true;
+  $("about").hidden=false;$("works").hidden=false;$("contact").hidden=false;
 }
 async function loadProjects(){
   if(!supabase){$("projectGrid").innerHTML='<div class="empty-state">Connect Supabase to publish your archive.</div>';$("projectCount").textContent="0 PROJECTS";return;}
@@ -171,12 +174,19 @@ function openProject(id,updateHash=true){
   const cover=p.thumbnail_url||p.image_url||images[0]||"";
   const gallery=images.length?images:(cover?[cover]:[]);
   const video=videoEmbed(p.video_url||"");
-  $("detailContent").innerHTML=`
-    <div class="detail-top"><div><div class="section-index"><span>PROJECT</span><span>${escapeHtml(p.category||"Selected work")} / ${escapeHtml(p.year||"")}</span></div><h1>${escapeHtml(p.title)}</h1></div><p>${escapeHtml(p.description||"")}</p></div>
-    ${cover?`<img class="detail-hero" src="${escapeHtml(cover)}" alt="${escapeHtml(p.title)}">`:""}
-    ${video?`<div class="detail-video">${video}</div>`:""}
-    ${gallery.length?`<div class="gallery-heading"><h3>${tr("gallery")}</h3><span class="mono">${String(gallery.length).padStart(2,"0")} ${tr("galleryHint")}</span></div><div class="detail-gallery">${gallery.map((src,i)=>`<button class="gallery-thumb" data-gallery-index="${i}" aria-label="View image ${i+1}"><img src="${escapeHtml(src)}" alt="${escapeHtml(p.title)} — image ${i+1}" loading="lazy"></button>`).join("")}</div>`:""}
-    ${safeUrl(p.external_url||"")?`<a class="project-open" href="${escapeHtml(safeUrl(p.external_url))}" target="_blank" rel="noopener noreferrer">${tr("external")}</a>`:""}`;
+  const layout=["editorial","full-bleed","gallery-first","split"].includes(p.layout_style)?p.layout_style:"editorial";
+  const detailText=(p.detail_content||"").trim();
+  const detailCopy=detailText?`<div class="project-story">${detailText.split(/\\n\\s*\\n/).map(paragraph=>`<p>${escapeHtml(paragraph).replace(/\\n/g,"<br>")}</p>`).join("")}</div>`:"";
+  const top=`<div class="detail-top"><div><div class="section-index"><span>PROJECT</span><span>${escapeHtml(p.category||"Selected work")} / ${escapeHtml(p.year||"")}</span></div><h1>${escapeHtml(p.title)}</h1></div><p>${escapeHtml(p.description||"")}</p></div>`;
+  const hero=cover?`<img class="detail-hero" src="${escapeHtml(cover)}" alt="${escapeHtml(p.title)}">`:"";
+  const media=video?`<div class="detail-video">${video}</div>`:"";
+  const galleryBlock=gallery.length?`<div class="gallery-heading"><h3>${tr("gallery")}</h3><span class="mono">${String(gallery.length).padStart(2,"0")} ${tr("galleryHint")}</span></div><div class="detail-gallery">${gallery.map((src,i)=>`<button class="gallery-thumb" data-gallery-index="${i}" aria-label="View image ${i+1}"><img src="${escapeHtml(src)}" alt="${escapeHtml(p.title)} — image ${i+1}" loading="lazy"></button>`).join("")}</div>`:"";
+  $("detailContent").className="detail-content layout-"+layout;
+  $("detailContent").innerHTML=layout==="full-bleed"?`${hero}${top}${detailCopy}${media}${galleryBlock}`:
+    layout==="gallery-first"?`${top}${galleryBlock}${hero}${detailCopy}${media}`:
+    layout==="split"?`<div class="detail-split">${top}${hero}</div>${detailCopy}${media}${galleryBlock}`:
+    `${top}${hero}${detailCopy}${media}${galleryBlock}`;
+  if(safeUrl(p.external_url||""))$("detailContent").insertAdjacentHTML("beforeend",`<a class="project-open" href="${escapeHtml(safeUrl(p.external_url))}" target="_blank" rel="noopener noreferrer">${tr("external")}</a>`);
   $("detailContent").querySelectorAll("[data-gallery-index]").forEach(b=>b.addEventListener("click",()=>openLightbox(gallery,Number(b.dataset.galleryIndex),p.title)));
   if(updateHash)history.pushState(null,"",`#project/${p.id}`);
   trackEvent("project_view",p.id);
@@ -231,18 +241,18 @@ async function loadAdminProjects(){
   try{
     const {data,error}=await supabase.from("projects").select("*").order("sort_order",{ascending:true}).order("created_at",{ascending:false});
     if(error)throw error;
-    const list=data||[];projects=list.map(p=>({...p,project_images:[]}));
+    const list=data||[];adminProjects=list.map(p=>({...p,project_images:[]}));
     const ids=list.map(p=>p.id);
     if(ids.length){
       const {data:images,error:imageError}=await supabase.from("project_images").select("project_id").in("project_id",ids);
       if(!imageError){
         const counts={};(images||[]).forEach(img=>counts[img.project_id]=(counts[img.project_id]||0)+1);
-        projects=projects.map(p=>({...p,gallery_count:counts[p.id]||0}));
+        adminProjects=adminProjects.map(p=>({...p,gallery_count:counts[p.id]||0}));
       }
     }
     $("adminCount").textContent=`${list.length} ITEMS`;
     container.innerHTML=list.map(p=>{
-      const count=(projects.find(x=>x.id===p.id)||{}).gallery_count||0;
+      const count=(adminProjects.find(x=>x.id===p.id)||{}).gallery_count||0;
       return `<div class="admin-project">
         ${p.thumbnail_url||p.image_url?`<img class="admin-thumb" src="${escapeHtml(p.thumbnail_url||p.image_url)}" alt="">`:'<div class="admin-thumb"></div>'}
         <div class="admin-project-info"><strong>${escapeHtml(p.title||"Untitled project")}</strong><span>${escapeHtml(p.category||"Uncategorized")} · ${escapeHtml(p.year||"")} · ORDER ${p.sort_order||0}</span></div>
@@ -258,6 +268,7 @@ async function loadAdminProjects(){
 function editProject(p){
   if(!p)return;$("projectId").value=p.id;$("title").value=p.title;$("category").value=p.category;$("year").value=p.year||"";
   $("externalUrl").value=p.external_url||"";$("description").value=p.description||"";
+  $("detailContentInput").value=p.detail_content||"";$("layoutStyleInput").value=p.layout_style||"editorial";
   $("sortOrder").value=p.sort_order||0;$("videoUrl").value=p.video_url||"";$("coverImage").value="";$("galleryImages").value="";
   $("saveProject").textContent="Update project ↗";$("editorMessage").textContent="Editing project. Upload a new thumbnail to replace the current one; existing gallery images are retained.";
   window.scrollTo({top:0,behavior:"smooth"});
@@ -280,7 +291,7 @@ async function saveProject(e){
   $("saveProject").disabled=true;$("editorMessage").textContent="Uploading and saving…";
   try{
     const id=$("projectId").value;
-    const payload={title:$("title").value.trim(),category:$("category").value,year:$("year").value.trim(),external_url:safeUrl($("externalUrl").value.trim())||null,description:$("description").value.trim(),sort_order:Number($("sortOrder").value)||0,video_url:safeUrl($("videoUrl").value.trim())||null};
+    const payload={title:$("title").value.trim(),category:$("category").value,year:$("year").value.trim(),external_url:safeUrl($("externalUrl").value.trim())||null,description:$("description").value.trim(),detail_content:$("detailContentInput").value.trim(),layout_style:$("layoutStyleInput").value,sort_order:Number($("sortOrder").value)||0,video_url:safeUrl($("videoUrl").value.trim())||null};
     const cover=$("coverImage").files[0];if(cover){const img=await uploadImage(cover,"thumbnails");payload.thumbnail_url=img.image_url;payload.thumbnail_path=img.image_path;}
     let saved;
     if(id){const {data,error}=await supabase.from("projects").update(payload).eq("id",id).select().single();if(error)throw error;saved=data;}
@@ -303,6 +314,6 @@ async function loadAnalytics(){
   const rows=data||[],views=rows.filter(x=>x.event_type==="page_view").length,projectViews=rows.filter(x=>x.event_type==="project_view").length,unique=new Set(rows.map(x=>x.session_id).filter(Boolean)).size;
   $("analyticsSummary").innerHTML=`<div class="analytics-card"><strong>${views}</strong><span>Page views / 30d</span></div><div class="analytics-card"><strong>${projectViews}</strong><span>Project views / 30d</span></div><div class="analytics-card"><strong>${unique}</strong><span>Sessions / 30d*</span></div>`;
   const counts={};rows.filter(x=>x.event_type==="project_view").forEach(x=>counts[x.project_id]=(counts[x.project_id]||0)+1);
-  $("analyticsList").innerHTML=projects.map(p=>`<div class="analytics-row"><span>${escapeHtml(p.title)}</span><strong>${counts[p.id]||0} views</strong></div>`).join("")||'<p class="form-message">No traffic data yet.</p>';
+  $("analyticsList").innerHTML=adminProjects.map(p=>`<div class="analytics-row"><span>${escapeHtml(p.title)}</span><strong>${counts[p.id]||0} views</strong></div>`).join("")||'<p class="form-message">No traffic data yet.</p>';
 }
 trackEvent("page_view");
