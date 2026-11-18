@@ -223,3 +223,47 @@ body,p,li,label,input,textarea,select,button,
 .admin-loading{min-height:110px;font-size:9px}
 .admin-error{color:#c8a6a0;overflow-wrap:anywhere}
 @media(prefers-reduced-motion:reduce){.moon-loader,.moon-loader::after{animation:none}}
+
+/* Chromatic starfield: stars drift through a varied, softly changing palette. */
+#starfield{
+  background-image:
+    radial-gradient(1.6px 1.6px at 7% 13%,#ffd6e7 98%,transparent),
+    radial-gradient(1.2px 1.2px at 17% 72%,#c8e8ff 98%,transparent),
+    radial-gradient(2px 2px at 29% 31%,#e5d0ff 98%,transparent),
+    radial-gradient(1.4px 1.4px at 41% 84%,#ffe7b8 98%,transparent),
+    radial-gradient(1.8px 1.8px at 56% 17%,#c9fff0 98%,transparent),
+    radial-gradient(1.2px 1.2px at 68% 63%,#ffd0c2 98%,transparent),
+    radial-gradient(1.7px 1.7px at 79% 28%,#d8d0ff 98%,transparent),
+    radial-gradient(1.3px 1.3px at 92% 78%,#f7d2ff 98%,transparent),
+    radial-gradient(1px 1px at 12% 48%,#bfeaff 98%,transparent),
+    radial-gradient(1px 1px at 36% 6%,#ffe0a8 98%,transparent),
+    radial-gradient(1px 1px at 73% 91%,#d2ffdf 98%,transparent),
+    radial-gradient(1px 1px at 88% 48%,#ffc9df 98%,transparent);
+  animation:starfieldBreath 5.5s ease-in-out infinite alternate,starColorDrift 31s linear infinite;
+}
+.grain::before{
+  background-image:
+    radial-gradient(circle,#ffd7e9 0 1px,transparent 2px),
+    radial-gradient(circle,#cdeaff 0 1.3px,transparent 2.5px),
+    radial-gradient(circle,#e5d4ff 0 1.2px,transparent 2.6px),
+    radial-gradient(circle,#ffe8c4 0 .9px,transparent 2px),
+    radial-gradient(circle,#c8ffec 0 1.4px,transparent 2.8px),
+    radial-gradient(circle,#ffd1c5 0 1px,transparent 2px);
+  animation:starTwinkle 3.2s ease-in-out infinite alternate,starColorDrift 23s linear infinite reverse;
+}
+.grain::after{
+  background-image:
+    radial-gradient(circle,#ffd6e7 0 2px,#ffd6e766 2.5px,transparent 7px),
+    radial-gradient(circle,#c9e8ff 0 1.7px,#c9e8ff55 2.5px,transparent 7px),
+    radial-gradient(circle,#e3d1ff 0 2px,#e3d1ff55 3px,transparent 8px);
+  animation:starGlimmer 4.8s ease-in-out infinite,starColorDrift 37s linear infinite;
+}
+@keyframes starColorDrift{
+  0%{filter:hue-rotate(0deg) saturate(1.05)}
+  50%{filter:hue-rotate(180deg) saturate(1.35)}
+  100%{filter:hue-rotate(360deg) saturate(1.05)}
+}
+@media(prefers-reduced-motion:reduce){
+  #starfield,.grain::before,.grain::after{animation:none}
+}
+
