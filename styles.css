@@ -267,3 +267,15 @@ body,p,li,label,input,textarea,select,button,
   #starfield,.grain::before,.grain::after{animation:none}
 }
 
+
+
+/* Per-project layout and long-form content controls. */
+.project-story{max-width:860px;margin:38px auto 52px;color:#aaa;font-size:13px;line-height:2.05}
+.project-story p{margin:0 0 1.35em}
+.layout-full-bleed .detail-hero{width:100%;max-height:none;aspect-ratio:21/9;object-fit:cover;margin-bottom:54px}
+.layout-gallery-first .gallery-heading{margin-top:30px}
+.layout-split .detail-split{display:grid;grid-template-columns:.9fr 1.1fr;gap:5vw;align-items:start;margin-bottom:48px}
+.layout-split .detail-top{display:block;margin:0}
+.layout-split .detail-top p{margin-top:24px}
+.layout-split .detail-hero{width:100%;max-height:none;aspect-ratio:4/5;object-fit:cover}
+@media(max-width:700px){.layout-split .detail-split{grid-template-columns:1fr;gap:22px}.layout-split .detail-hero{aspect-ratio:4/3}.project-story{font-size:12px;margin:28px auto 38px}}
