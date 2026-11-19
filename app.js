@@ -93,6 +93,24 @@ $("loginForm").addEventListener("submit",signIn);$("logoutButton").addEventListe
 $("projectForm").addEventListener("submit",saveProject);$("resetForm").addEventListener("click",resetEditor);
 $("layoutStyleInput").addEventListener("change",syncLayoutPreset);
 $("layoutPresets").addEventListener("click",e=>{const button=e.target.closest("[data-layout-preset]");if(!button)return;$("layoutStyleInput").value=button.dataset.layoutPreset;syncLayoutPreset();});
+function showStudioPanel(name){
+  document.querySelectorAll("[data-studio-panel]").forEach(panel=>{
+    const active=panel.dataset.studioPanel===name;
+    panel.classList.toggle("active",active);
+    panel.hidden=!active;
+  });
+  document.querySelectorAll("[data-studio-tab]").forEach(tab=>{
+    const active=tab.dataset.studioTab===name;
+    tab.classList.toggle("active",active);
+    tab.setAttribute("aria-selected",active?"true":"false");
+  });
+  if(name==="manage")loadAdminProjects();
+}
+document.querySelector(".studio-tabs").addEventListener("click",e=>{
+  const tab=e.target.closest("[data-studio-tab]");
+  if(tab)showStudioPanel(tab.dataset.studioTab);
+});
+showStudioPanel("homepage");
 $("homepageForm").addEventListener("submit",saveHome);$("resetHomepage").addEventListener("click",resetHome);
 $("styleTargetInput").addEventListener("change",loadElementStyleInputs);
 $("previewElementStyle").addEventListener("click",()=>updateSelectedElementStyle(false));
@@ -124,7 +142,7 @@ $("adminProjectList").addEventListener("click",async e=>{
       }
       edit.disabled=false;
     }
-    editProject(project);
+    editProject(project);showStudioPanel("upload");
   }
   if(del){e.preventDefault();e.stopPropagation();deleteProject(del.dataset.delete);}
 });
