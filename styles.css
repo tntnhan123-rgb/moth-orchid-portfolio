@@ -318,3 +318,17 @@ body,p,li,label,input,textarea,select,button,
 .layout-minimal .detail-top p{max-width:600px}
 .layout-minimal .project-story{max-width:700px;margin:30px auto 60px}
 @media(max-width:700px){.layout-preset-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.layout-presets{padding:14px}.layout-presets-heading{align-items:flex-start;flex-direction:column}.layout-presets-heading small{text-align:left}.layout-magazine .detail-top{grid-template-columns:1fr}.layout-magazine .detail-gallery{grid-template-columns:repeat(2,minmax(0,1fr))}.layout-magazine .detail-gallery .gallery-thumb:first-child{grid-column:span 2;grid-row:auto}}
+
+
+/* Studio navigation and separated content-management workspaces */
+.studio-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:26px 0 30px;border-bottom:1px solid var(--line);padding-bottom:14px}
+.studio-tab{display:flex;align-items:center;gap:10px;min-width:0;padding:14px 12px;border:1px solid #292929;background:#0d0d0d;color:#999;text-align:left;font:500 10px "Montserrat",sans-serif;cursor:pointer;transition:border-color .2s,color .2s,background .2s}
+.studio-tab span{font:9px var(--mono);color:#777}
+.studio-tab:hover,.studio-tab.active{border-color:#aaa;color:#f0ece5;background:#171614}
+.studio-tab.active span{color:#e5d8c7}
+.studio-panel{display:none;min-width:0;scroll-margin-top:20px}
+.studio-panel.active{display:block;animation:studioPanelIn .24s ease both}
+.studio-panel[hidden]{display:none!important}
+@keyframes studioPanelIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.studio-panel>.manage-heading:first-child{margin-top:0}
+@media(max-width:700px){.studio-tabs{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:20px 0 24px}.studio-tab{padding:12px 9px;font-size:9px}.studio-tab span{font-size:8px}}
