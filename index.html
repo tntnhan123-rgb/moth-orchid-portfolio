@@ -98,7 +98,14 @@
         </form>
       </div>
       <div class="dashboard" id="dashboard" hidden>
-        <div class="dashboard-heading"><div><p class="eyebrow">Content management</p><h2>Project archive</h2></div><button class="quiet-button" id="logoutButton">Sign out</button></div>
+        <div class="dashboard-heading"><div><p class="eyebrow">Content management</p><h2>Studio workspace</h2></div><button class="quiet-button" id="logoutButton">Sign out</button></div>
+<nav class="studio-tabs" aria-label="Studio sections">
+<button type="button" class="studio-tab active" data-studio-tab="homepage" aria-selected="true"><span>01</span> Homepage editor</button>
+<button type="button" class="studio-tab" data-studio-tab="upload" aria-selected="false"><span>02</span> Upload project</button>
+<button type="button" class="studio-tab" data-studio-tab="manage" aria-selected="false"><span>03</span> Edit projects</button>
+<button type="button" class="studio-tab" data-studio-tab="analytics" aria-selected="false"><span>04</span> Analytics</button>
+</nav>
+<section class="studio-panel active" id="studioHomepage" data-studio-panel="homepage">
 <div class="manage-heading"><h3>Homepage editor</h3><span class="mono">CONTENT & TYPOGRAPHY</span></div>
 <form id="homepageForm" class="admin-form editor-form homepage-editor">
 <p class="form-message">Chỉnh sửa nội dung trang chủ. Thay đổi sẽ được lưu và hiển thị công khai sau khi nhấn Save.</p>
@@ -140,6 +147,9 @@
   <div class="form-actions"><button class="quiet-button" type="button" id="previewElementStyle">Preview selected element</button><button class="quiet-button" type="button" id="resetElementStyle">Reset selected element</button></div>
 </div>
 <div class="form-actions"><button class="solid-button" type="submit" id="saveHomepage">Save homepage ↗</button><button class="quiet-button" type="button" id="resetHomepage">Reset defaults</button></div><p class="form-message" id="homepageMessage"></p></form>
+</section>
+<section class="studio-panel" id="studioUpload" data-studio-panel="upload">
+<div class="manage-heading"><h3>Upload / edit project</h3><span class="mono">PROJECT CONTENT & MEDIA</span></div>
         <form id="projectForm" class="admin-form editor-form">
           <input type="hidden" id="projectId">
           <div class="form-two">
@@ -171,11 +181,16 @@
           <div class="form-actions"><button class="solid-button" type="submit" id="saveProject">Publish project ↗</button><button class="quiet-button" type="button" id="resetForm">Clear form</button></div>
           <p class="form-message" id="editorMessage"></p>
         </form>
+</section>
+<section class="studio-panel" id="studioManage" data-studio-panel="manage">
         <div class="manage-heading"><h3>Published projects</h3><span class="mono" id="adminCount">0 ITEMS</span></div>
         <div id="adminProjectList" class="admin-project-list"></div>
-        <div class="manage-heading"><h3>Traffic analytics</h3><span class="mono">LAST 30 DAYS</span></div>
+        </section>
+<section class="studio-panel" id="studioAnalytics" data-studio-panel="analytics">
+<div class="manage-heading"><h3>Traffic analytics</h3><span class="mono">LAST 30 DAYS</span></div>
         <div class="analytics-grid" id="analyticsSummary"></div>
         <div id="analyticsList" class="analytics-list"></div>
+</section>
       </div>
     </div>
   </section>
